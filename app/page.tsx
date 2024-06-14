@@ -24,6 +24,7 @@ export default function ContactForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<Tschema>({
     resolver: zodResolver(schema),
@@ -39,8 +40,8 @@ export default function ContactForm() {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      
     });
+    reset();
   };
 
   return (
