@@ -1,113 +1,283 @@
-import Image from "next/image";
+"use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function Home() {
+const schema = z.object({
+  firstName: z.string().nonempty("This field is required."),
+  lastName: z.string().nonempty("This field is required."),
+  email: z.string().email("Please enter a valid email address."),
+  queryType: z.enum(["Enquiry", "System Request"], {
+    errorMap: () => ({ message: "Please select a query type." }),
+  }),
+  message: z.string().nonempty("This field is required."),
+  consent: z.boolean().refine((val) => val, {
+    message: "To submit this form, please consent to being contacted.",
+  }),
+});
+
+type Tschema = z.infer<typeof schema>;
+
+export default function ContactForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Tschema>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data: Tschema) => {
+    console.log(data);
+    toast.success("Message sent. Thanks for filling the form!", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      
+    });
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <main className="flex h-screen items-center justify-center bg-green-100">
+      <div className="font-karla my-4 max-w-lg rounded-lg bg-white p-8">
+        <h2 className="mb-6 text-2xl font-bold text-gray-800">Contact Us</h2>
+        <ToastContainer />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col lg:flex-row lg:space-x-4">
+            <div className="mb-4 w-full">
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700"
+              >
+                First Name <span className="text-green-600">*</span>
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm outline-none focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                {...register("firstName")}
+              />
+              {errors.firstName && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.firstName.message}
+                </p>
+              )}
+            </div>
+            <div className="mb-4 w-full">
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Last Name <span className="text-green-900">*</span>
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm outline-none focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                {...register("lastName")}
+              />
+              {errors.lastName && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.lastName.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email <span className="text-green-600">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm outline-none sm:text-sm"
+              {...register("email")}
             />
-          </a>
-        </div>
-      </div>
+            {errors.email && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+          <div className="mb-4">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Query Type <span className="text-green-800">*</span>
+            </label>
+            <div className="flex flex-col lg:flex-row lg:space-x-4">
+              <div className="mb-2 w-full">
+                <div className="flex items-center rounded-md border border-gray-300 px-4 py-2 focus-within:border-green-500 focus-within:bg-gray-200">
+                  <input
+                    type="radio"
+                    id="enquiry"
+                    value="Enquiry"
+                    className="mr-2 outline-none focus:bg-gray-200 focus:ring-green-500 focus:ring-opacity-50"
+                    {...register("queryType")}
+                  />
+                  <label htmlFor="enquiry" className="text-sm text-gray-800">
+                    General Enquiry
+                  </label>
+                </div>
+              </div>
+              <div className="w-full">
+                <div className="flex items-center rounded-md border border-gray-300 px-4 py-2 focus-within:border-green-500 focus-within:bg-gray-200">
+                  <input
+                    type="radio"
+                    id="system_request"
+                    value="System Request"
+                    className="mr-2 text-green-800 focus:ring-green-500 focus:ring-opacity-50"
+                    {...register("queryType")}
+                  />
+                  <label
+                    htmlFor="system_request"
+                    className="text-sm text-gray-800"
+                  >
+                    System Request
+                  </label>
+                </div>
+              </div>
+            </div>
+            {errors.queryType && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.queryType.message}
+              </p>
+            )}
+          </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          <div className="mb-4">
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Message <span className="text-green-800">*</span>
+            </label>
+            <textarea
+              id="message"
+              rows={6}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm outline-none sm:text-sm"
+              {...register("message")}
+            ></textarea>
+            {errors.message && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.message.message}
+              </p>
+            )}
+          </div>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+          <div className="my-6 flex items-center">
+            <input
+              type="checkbox"
+              id="consent"
+              className="mr-2 h-5 w-5 cursor-pointer rounded border-gray-300 bg-green-500 outline-none focus:ring-green-500"
+              {...register("consent")}
+            />
+            <label htmlFor="consent" className="text-sm text-gray-700">
+              I consent to being contacted by the team{" "}
+              <span className="text-green-800">*</span>
+            </label>
+          </div>
+          {errors.consent && (
+            <p className="text-sm text-red-600">{errors.consent.message}</p>
+          )}
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+          <button
+            type="submit"
+            className="my-6 w-full rounded-md bg-green-900 py-2 text-sm text-white hover:bg-green-950"
+          >
+            Submit
+          </button>
+        </form>
       </div>
     </main>
   );
 }
+
+// "use client";
+
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { FieldValues, useForm } from "react-hook-form";
+// import z from "zod";
+
+// const signUpSchema = z
+//   .object({
+//     email: z.string().email(),
+//     password: z.string().min(6, "Password must be at least 6 characters"),
+//     confirmPassword: z.string(),
+//   })
+//   .refine((data) => data.password === data.confirmPassword, {
+//     message: "Passwords do not match",
+//     path: ["confirmPassword"],
+//   });
+
+// type TsignUpSchema = z.infer<typeof signUpSchema>;
+
+// export default function Home() {
+//   const {
+//     register,
+//     handleSubmit,
+//     formState: { errors, isSubmitting },
+//     reset,
+//   } = useForm<TsignUpSchema>({
+//     resolver: zodResolver(signUpSchema),
+//   });
+
+//   const onsubmit = async (data: TsignUpSchema) => {
+//     await new Promise((resolve) => setTimeout(resolve, 1000));
+//     reset();
+//   };
+//   return (
+//     <form
+//       onSubmit={handleSubmit(onsubmit)}
+//       className="flex h-screen flex-col items-center justify-center gap-y-2 bg-gray-400 pt-20"
+//     >
+//       {errors.email && (
+//         <p className="text-red-500">{`${errors.email.message}`}</p>
+//       )}
+//       <input
+//         {...register("email")}
+//         type="email"
+//         className="rounded px-4 py-2"
+//         placeholder="Email"
+//       />
+
+//       {errors.password && (
+//         <p className="text-red-500">{`${errors.password.message}`}</p>
+//       )}
+//       <input
+//         {...register("password")}
+//         type="password"
+//         className="rounded px-4 py-2"
+//         placeholder="Password"
+//       />
+
+//       {errors.confirmPassword && (
+//         <p className="text-red-500">{`${errors.confirmPassword.message}`}</p>
+//       )}
+//       <input
+//         {...register("confirmPassword")}
+//         type="password"
+//         required
+//         className="rounded px-4 py-2"
+//         placeholder="Confirm Password"
+//       />
+
+//       <button
+//         className="rounded bg-blue-600 px-24 py-2 disabled:bg-gray-500"
+//         type="submit"
+//         disabled={isSubmitting}
+//       >
+//         Submit
+//       </button>
+//     </form>
+//   );
+// }
