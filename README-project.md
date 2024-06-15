@@ -30,7 +30,7 @@ Users should be able to:
 
 ### Screenshot
 
-![ScreenShot](./public/FireShot/FireShot%20Capture%20001%20-%20Create%20Next%20App%20-%20localhost.png)
+![ScreenShot](https://raw.githubusercontent.com/Bennet-Ukoh/https://github.com/Bennet-Ukoh/Interactive-contact-form.git/main/public/FireShot/FireShot-Capture-001-Create-Next-App-localhost.png)
 
 - A screen shot showing the contact form.
 
