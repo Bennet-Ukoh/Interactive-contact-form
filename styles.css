@@ -1,0 +1,12 @@
+/* styles.css */
+.custom-toast {
+  @apply flex items-center justify-center rounded-md bg-black p-4 text-white;
+}
+
+.custom-toast p {
+  @apply m-0 p-0;
+}
+
+.custom-toast-icon {
+  @apply mr-2;
+}
